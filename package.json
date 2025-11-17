@@ -1,0 +1,25 @@
+{
+  "name": "vidman",
+  "version": "1.0.0",
+  "description": "Video viewer and manager for local disk",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "cross-env DEV=true electron ."
+  },
+  "keywords": [
+    "video",
+    "manager",
+    "electron"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "electron": "^39.2.1"
+  },
+  "dependencies": {
+    "fluent-ffmpeg": "^2.1.2",
+    "jquery": "^3.7.1"
+  }
+}

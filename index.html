@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vidman</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Path display -->
+    <div id="path-display"></div>
+    
+    <!-- Message bar -->
+    <div id="message-bar"></div>
+    
+    <!-- Meta-navigation bar -->
+    <div id="meta-navigation-bar">
+      <div id="meta-navigation-list"></div>
+    </div>
+    
+    <!-- Directory panel -->
+    <div id="directory-panel">
+      <div id="directory-list"></div>
+    </div>
+    
+    <!-- Video grid -->
+    <div id="video-grid"></div>
+    
+    <!-- Video player overlay -->
+    <div id="video-player" class="hidden">
+      <video id="video-element"></video>
+      <div id="video-controls">
+        <button id="play-pause-btn">Play</button>
+        <button id="close-btn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="node_modules/jquery/dist/jquery.min.js"></script>
+  <script src="renderer.js"></script>
+</body>
+</html>
+
