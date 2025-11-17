@@ -359,7 +359,7 @@ async function moveVideoFile(sourcePath, destinationPath) {
   }
 }
 
-$(document).ready(() => {
+$(() => {
   console.log('Vidman initialized');
   
   // Initialize starting directory to c:\
