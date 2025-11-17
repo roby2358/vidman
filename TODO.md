@@ -59,11 +59,11 @@ X Implement keyboard shortcuts (space: play/pause, escape: exit, enter: jump to 
 X Handle player show/hide transitions
 
 ## Stage 8: Drag and Drop Functionality
-- Implement drag start on video items
-- Implement drop zones on folder items in directory bar
-- Handle drag and drop visual feedback (minimal presentation)
-- Implement file move operation on drop
-- Update message bar with success/failure messages
-- Implement message bar highlight and fade behavior (5 second fade, leave visible)
-- Refresh video grid after successful move
+X Implement drag start on video items
+X Implement drop zones on folder items in directory bar
+X Handle drag and drop visual feedback (minimal presentation)
+X Implement file move operation on drop
+X Update message bar with success/failure messages
+X Implement message bar highlight and fade behavior (5 second fade, leave visible)
+X Refresh video grid after successful move
 

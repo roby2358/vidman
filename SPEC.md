@@ -13,7 +13,7 @@ will appear.
 5 across with 9:16 aspect ratio, scaled to fit inside. When clicked, a video
 expands to fit the window and plays. It repeats when finished.
 
-6) Fill the window, scaling the video to fit. Controls: play, pause, close
+6) Fill the window, scaling the video to fit. Controls: play, pause, close. The video player MUST start playing automatically when opened. The player MUST use smooth opacity transitions when showing and hiding.
 
 User actions:
 
@@ -21,10 +21,12 @@ User actions:
 2) Click on parent ".." in the meta-navigation bar to navigate up
 3) Click on a volume (C:, D:, etc.) in the meta-navigation bar to navigate to that volume
 4) drag a video to one of the folders in the subdirectory bar to move it to that folder on disk.
-5) click on a video to expand it to fill the screen and play it on repeat.
+5) drag a video to ".." in the meta-navigation bar to move it to the parent directory.
+6) drag a video to a volume (C:, D:, etc.) in the meta-navigation bar to move it to that volume root.
+7) click on a video to expand it to fill the screen and play it on repeat.
 
 Tecnical specs:
-The message bar MUST be blank
+The message bar MUST display "ready" on startup
 The message bar MUST highlight a new message
 The message bar MUST fade the last message after 5 seconds but leave it visible
 The meta-navigation bar MUST show ".." when there is a parent directory (i.e. not at a volume root)
@@ -33,9 +35,12 @@ The meta-navigation bar MUST list available volumes. If volume introspection is 
 The app MUST fill the window with as many video thumbnails ad videos are present
   and leave the rest of the window blank
 MUST support .mp4
-MAY support others, but not required
-MUST only display files with video extentions in the video pane
-The video pane MUST show thumnail and file name
+MAY support other video formats (.webm, .avi, .mov, .mkv, .flv, .wmv, .m4v), but not required
+MUST only display files with video extensions in the video pane
+The video pane MUST show thumbnail and file name
+The video pane MUST display "Loading..." while thumbnails are being generated
+The video pane MUST display "no FFmpeg" if FFmpeg is not available or not found
+The video pane MUST display "No thumbnail" if thumbnail generation fails for other reasons
 The app MUST extract the first frame from MP4 files and cache it in memory
 The file name MUST wrap at character break if it is long
 The video pane MUST sort videos by date modified or then created
@@ -44,6 +49,9 @@ The video pane MUST display "no videos available" if there are zero videos
 A successful operation (i.e. move a video) must be reported in the message bar
 A failed operation (i.e. move a video) must be reported in the message bar with
   a reason why
+The app MUST NOT allow moving files between different volumes (e.g., from C: to D:).
+  If a move between volumes is attempted, the operation MUST be halted and the message
+  "Can not move between volumes" MUST be displayed in the message bar.
 The video playback MUST support keyboard shortcut space to play/pause
 The video playback MUST support keyboard shortcut escape to exit the player
 The video playback MUST support keyboard shortcut enter to jump to the start

@@ -56,7 +56,20 @@ async function generateThumbnail(videoPath) {
         } catch (err) {
           // Ignore cleanup errors
         }
-        reject(new Error(`FFmpeg error: ${error.message}`));
+        
+        // Check if error is due to ffmpeg not being found
+        const errorMsg = error.message.toLowerCase();
+        const isFFmpegNotFound = errorMsg.includes('ffmpeg') && 
+                                 (errorMsg.includes('not found') || 
+                                  errorMsg.includes('enoent') || 
+                                  errorMsg.includes('spawn') ||
+                                  errorMsg.includes('cannot find'));
+        
+        if (isFFmpegNotFound) {
+          reject(new Error('FFMPEG_NOT_FOUND'));
+        } else {
+          reject(new Error(`FFmpeg error: ${error.message}`));
+        }
       })
       .run();
   });

@@ -46,6 +46,10 @@ async function displayMetaNavigation(currentPath) {
     const $parent = $('<div>').addClass('meta-nav-item').text('..');
     $parent.data('path', parentDir);
     $parent.on('click', () => navigateToDirectory(parentDir));
+    
+    // Make ".." a drop zone for drag and drop
+    setupDropZone($parent, parentDir);
+    
     $metaNav.append($parent);
   }
   
@@ -56,7 +60,36 @@ async function displayMetaNavigation(currentPath) {
     const $volume = $('<div>').addClass('meta-nav-item').text(volume);
     $volume.data('path', volumePath);
     $volume.on('click', () => navigateToDirectory(volumePath));
+    
+    // Make volume a drop zone for drag and drop
+    setupDropZone($volume, volumePath);
+    
     $metaNav.append($volume);
+  });
+}
+
+function setupDropZone($item, destinationPath) {
+  // Drag and drop - make item a drop zone
+  $item.on('dragover', (e) => {
+    e.preventDefault();
+    e.originalEvent.dataTransfer.dropEffect = 'move';
+    // Minimal visual feedback
+    $item.css('background-color', '#d0d0d0');
+  });
+  
+  $item.on('dragleave', () => {
+    $item.css('background-color', '');
+  });
+  
+  $item.on('drop', async (e) => {
+    e.preventDefault();
+    $item.css('background-color', '');
+    
+    const sourcePath = e.originalEvent.dataTransfer.getData('text/plain');
+    
+    if (sourcePath) {
+      await moveVideoFile(sourcePath, destinationPath);
+    }
   });
 }
 
@@ -69,6 +102,10 @@ function displaySubdirectories(subdirectories) {
     const $item = $('<div>').addClass('directory-item').text(subdir.name);
     $item.data('path', subdir.path);
     $item.on('click', () => navigateToDirectory(subdir.path));
+    
+    // Make directory item a drop zone
+    setupDropZone($item, subdir.path);
+    
     $list.append($item);
   });
 }
@@ -120,6 +157,18 @@ function displayVideos(videos) {
       openVideoPlayer(video.path);
     });
     
+    // Drag and drop - make video item draggable
+    $item.attr('draggable', 'true');
+    $item.on('dragstart', (e) => {
+      e.originalEvent.dataTransfer.setData('text/plain', video.path);
+      e.originalEvent.dataTransfer.effectAllowed = 'move';
+      // Minimal visual feedback - just a slight opacity change
+      $item.css('opacity', '0.7');
+    });
+    $item.on('dragend', () => {
+      $item.css('opacity', '1');
+    });
+    
     $grid.append($item);
     
     // Load thumbnail (check cache first, then generate)
@@ -143,11 +192,21 @@ async function loadThumbnail(videoPath, $thumbnailContainer) {
     if (result.success) {
       displayThumbnail($thumbnailContainer, result.data);
     } else {
-      $thumbnailContainer.text('No thumbnail');
+      // Check if error is due to FFmpeg not being found
+      if (result.error && result.error.includes('FFMPEG_NOT_FOUND')) {
+        $thumbnailContainer.text('no FFmpeg');
+      } else {
+        $thumbnailContainer.text('No thumbnail');
+      }
     }
   } catch (error) {
     console.error('Error loading thumbnail:', error);
-    $thumbnailContainer.text('No thumbnail');
+    // Check if error is due to FFmpeg not being found
+    if (error.message && error.message.includes('FFMPEG_NOT_FOUND')) {
+      $thumbnailContainer.text('no FFmpeg');
+    } else {
+      $thumbnailContainer.text('No thumbnail');
+    }
   }
 }
 
@@ -253,6 +312,38 @@ function jumpToStart() {
 function updatePlayPauseButton(isPlaying) {
   const $btn = $('#play-pause-btn');
   $btn.text(isPlaying ? 'Pause' : 'Play');
+}
+
+async function moveVideoFile(sourcePath, destinationPath) {
+  try {
+    // Check if moving between volumes (different drive letters)
+    const sourceVolume = sourcePath.match(/^([A-Z]):/i);
+    const destVolume = destinationPath.match(/^([A-Z]):/i);
+    
+    if (sourceVolume && destVolume && sourceVolume[1].toUpperCase() !== destVolume[1].toUpperCase()) {
+      showMessage('Can not move between volumes', false);
+      return;
+    }
+    
+    // Extract filename from source path (Windows path handling)
+    const fileName = sourcePath.split('\\').pop();
+    const newPath = destinationPath.endsWith('\\') 
+      ? destinationPath + fileName 
+      : destinationPath + '\\' + fileName;
+    
+    const result = await window.electronAPI.moveFile(sourcePath, newPath);
+    
+    if (result.success) {
+      const destFolderName = destinationPath.split('\\').pop() || destinationPath;
+      showMessage(`Moved ${fileName} to ${destFolderName}`, true);
+      // Refresh the current directory to update the video grid
+      await loadDirectory(currentDirectory);
+    } else {
+      showMessage(`Failed to move file: ${result.error}`, false);
+    }
+  } catch (error) {
+    showMessage(`Error moving file: ${error.message}`, false);
+  }
 }
 
 $(document).ready(() => {
