@@ -244,8 +244,26 @@ function openVideoPlayer(videoPath) {
   
   // Set video source - convert Windows path to file:// URL
   // Electron needs file:/// format (three slashes) for Windows paths
-  const normalizedPath = videoPath.replace(/\\/g, '/');
-  $video.attr('src', `file:///${normalizedPath}`);
+  // Format: file:///C:/path/to/file.mp4
+  let fileUrl = videoPath.replace(/\\/g, '/');
+  // Ensure drive letter is uppercase and format is correct
+  if (fileUrl.match(/^[a-z]:/i)) {
+    fileUrl = fileUrl.replace(/^([a-z]):/i, (match, drive) => drive.toUpperCase() + ':');
+  }
+  // URL encode the path to handle special characters like %
+  // Split drive letter and path, encode the path part
+  const driveMatch = fileUrl.match(/^([A-Z]:)(.*)$/);
+  if (driveMatch) {
+    const drive = driveMatch[1];
+    const pathPart = driveMatch[2];
+    // Encode each path segment separately to preserve slashes
+    const encodedPath = pathPart.split('/').map(segment => encodeURIComponent(segment)).join('/');
+    fileUrl = drive + encodedPath;
+  } else {
+    // Fallback: encode the whole thing if no drive letter
+    fileUrl = encodeURI(fileUrl);
+  }
+  $video.attr('src', `file:///${fileUrl}`);
   
   // Show player with transition
   $player.removeClass('hidden');
