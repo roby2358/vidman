@@ -213,11 +213,6 @@ async function loadThumbnail(videoPath, $thumbnailContainer) {
 function displayThumbnail($container, dataUrl) {
   $container.empty();
   const $img = $('<img>').attr('src', dataUrl);
-  $img.css({
-    'width': '100%',
-    'height': '100%',
-    'object-fit': 'cover'
-  });
   $container.append($img);
 }
 
